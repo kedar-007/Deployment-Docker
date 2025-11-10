@@ -1,7 +1,3 @@
-#build the docker code 
-#Push the image to docker hub
-#SSH in to the vm and start the images
-
 name: Deploy the Backend
 
 on:
@@ -13,15 +9,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 
+      Checkout the repository
       - name: Checkout the code
         uses: actions/checkout@v2
 
+      # Log in to Docker Hub
       - name: Docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Build and push the Docker image
       - name: Build and push the image
         uses: docker/build-push-action@v4
         with:
@@ -30,6 +30,7 @@ jobs:
           push: true
           tags: kedar6011/todo-app-backend:${{ github.sha }}
 
+      # # 4️⃣ SSH into VM and deploy the container
       # - name: SSH into VM and deploy container
       #   uses: appleboy/ssh-action@v1.0.3
       #   with:
@@ -37,7 +38,18 @@ jobs:
       #     username: ${{ secrets.VM_USER }}
       #     key: ${{ secrets.VM_SSH_KEY }}
       #     script: |
+      #       echo "Pulling latest image..."
       #       docker pull kedar6011/todo-app-backend:${{ github.sha }}
+
+      #       echo "Stopping existing container..."
       #       docker stop todo-backend || true
       #       docker rm todo-backend || true
-      #       docker run -d --name todo-backend -p 8080:8080 kedar6011/todo-app-backend:${{ github.sha }}
+
+      #       echo "Starting new container..."
+      #       docker run -d \
+      #         --name todo-backend \
+      #         -p 8080:8080 \
+      #         -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+      #         kedar6011/todo-app-backend:${{ github.sha }}
+
+      #       echo "Deployment successful 🎉"
