@@ -10,7 +10,6 @@ jobs:
 
     steps:
       # Clone the repo
-      Checkout the repository
       - name: Checkout the code
         uses: actions/checkout@v2
 
